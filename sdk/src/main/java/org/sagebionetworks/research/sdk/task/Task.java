@@ -20,9 +20,12 @@ package org.sagebionetworks.research.sdk.task;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
+import android.support.annotation.StringRes;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 
 import org.sagebionetworks.research.sdk.Duration;
 import org.sagebionetworks.research.sdk.Schema;
@@ -31,21 +34,21 @@ import org.sagebionetworks.research.sdk.Schema;
  * Created by liujoshua on 10/2/2017.
  */
 
-interface Task {
+public interface Task {
     @NonNull
     String getIdentifier();
 
-    @Nullable
-    Schema getSchema();
+    @NonNull
+    Optional<Schema> getSchema();
 
-    @Nullable
-    String getTitle();
+    @StringRes
+    int getTitle();
 
-    @Nullable
-    String getDetail();
+    @StringRes
+    int getDetail();
 
-    @Nullable
-    String getCopyright();
+    @StringRes
+    int getCopyright();
 
     @Nullable
     Duration getEstimatedDuration();
