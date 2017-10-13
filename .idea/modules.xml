@@ -4,9 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ResearchSuite-Android.iml" filepath="$PROJECT_DIR$/ResearchSuite-Android.iml" />
       <module fileurl="file://C:\dev\code\ResearchSuite-Android\SageResearch-Android.iml" filepath="C:\dev\code\ResearchSuite-Android\SageResearch-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sdk/sdk.iml" filepath="$PROJECT_DIR$/sdk/sdk.iml" />
-      <module fileurl="file://C:\dev\code\ResearchSuite-Android\sdk\sdk.iml" filepath="C:\dev\code\ResearchSuite-Android\sdk\sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sdk/sdk-impl.iml" filepath="$PROJECT_DIR$/sdk/sdk-impl.iml" />
     </modules>
   </component>
 </project>

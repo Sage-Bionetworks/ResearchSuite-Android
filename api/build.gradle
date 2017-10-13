@@ -1,0 +1,26 @@
+apply plugin: 'java-library'
+
+// add this to default tasks
+defaultTasks 'jar'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'ResearchSuite SDK',
+                'Implementation-Version': version
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:support-annotations:26.1.0'
+    implementation 'com.google.guava:guava:23.2-jre'
+    implementation 'org.slf4j:slf4j-api:1.7.21'
+
+    testImplementation 'junit:junit:4.12'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+apply from: "$rootDir/gradle/artifact-deploy.gradle"

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">sdk</string>
+    <string name="rsi_app_name">sdk</string>
+    <string name="rsi_empty"></string>
 </resources>

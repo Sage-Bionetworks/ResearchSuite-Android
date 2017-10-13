@@ -19,12 +19,20 @@
 
 buildscript {
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+
+        // begin ResearchStack
+        classpath 'me.tatarka:gradle-retrolambda:3.2.3'
+        classpath "com.neenbedankt.gradle.plugins:android-apt:1.4"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7'
+        //end ResearchStack
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -33,43 +41,83 @@ buildscript {
 
 allprojects {
     version = '0.0.2'
-    group = 'org.sagebionetworks.bridge'
+    group = 'org.sagebionetworks.researchsuite'
 
     repositories {
         jcenter()
         mavenLocal()
         maven { url 'https://maven.google.com' }
+
+        maven { url "https://jitpack.io" } // ResearchStack
     }
 }
 
 subprojects {
     afterEvaluate { project ->
-        task sourcesJar(type: Jar) {
-            from android.sourceSets.main.java.srcDirs
-            classifier = 'sources'
+        if (project.plugins.hasPlugin('com.android.library')) {
+            task sourcesJar(type: Jar) {
+                from android.sourceSets.main.java.srcDirs
+                classifier = 'sources'
+            }
+
+            task javadoc(type: Javadoc) {
+                source = android.sourceSets.main.java.srcDirs
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+                classpath += fileTree(dir: "$buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
+                classpath += configurations.compile
+                // Exclude generated files
+                exclude '**/BuildConfig.java'
+                exclude '**/R.java'
+            }
+
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from javadoc.destinationDir
+            }
+            artifacts {
+                archives javadocJar
+                archives sourcesJar
+            }
+
+            task findConventions {
+                doLast {
+                    println project.getConvention()
+                }
+            }
         }
 
-        task javadoc(type: Javadoc) {
-            source = android.sourceSets.main.java.srcDirs
-            classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-            classpath += fileTree(dir: "$buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
-            classpath += configurations.compile
-            // Exclude generated files
-            exclude '**/BuildConfig.java'
-            exclude '**/R.java'
-        }
+        if (project.plugins.hasPlugin('java-library')) {
+            println project.name
 
-        task javadocJar(type: Jar, dependsOn: javadoc) {
-            classifier = 'javadoc'
-            from javadoc.destinationDir
-        }
-        artifacts {
-            archives javadocJar
-            archives sourcesJar
-        }
+            task sourcesJar(type: Jar) {
+                from sourceSets.main.allSource
+                classifier = 'sources'
+            }
+//
+//            task javadoc(type: Javadoc) {
+//                source = android.sourceSets.main.java.srcDirs
+//                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//                classpath += fileTree(dir: "$buildDir/intermediates/exploded-aar/", include: "**/classes.jar")
+//                classpath += configurations.compile
+//                // Exclude generated files
+//                exclude '**/BuildConfig.java'
+//                exclude '**/R.java'
+//            }
 
-        task findConventions << {
-            println project.getConvention()
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from javadoc.destinationDir
+            }
+            artifacts {
+                archives javadocJar
+                archives sourcesJar
+            }
+
+            task findConventions {
+                doLast {
+                    println project.getConvention()
+                }
+            }
         }
     }
 
