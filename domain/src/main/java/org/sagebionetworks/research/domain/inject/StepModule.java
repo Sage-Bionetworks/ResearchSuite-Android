@@ -33,13 +33,8 @@
 package org.sagebionetworks.research.domain.inject;
 
 import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import org.sagebionetworks.research.domain.RuntimeTypeAdapterFactory;
-import org.sagebionetworks.research.domain.form.InputField;
-import org.sagebionetworks.research.domain.form.InputFieldBase;
 import org.sagebionetworks.research.domain.inject.GsonModule.ClassKey;
 import org.sagebionetworks.research.domain.step.ActiveUIStepBase;
 import org.sagebionetworks.research.domain.step.FormUIStepBase;
@@ -66,7 +61,6 @@ import static org.sagebionetworks.research.domain.inject.GsonModule.createPassth
 
 @Module(includes = {GsonModule.class})
 public class StepModule {
-
     /**
      * Annotation marker for registering a Step subclass for polymorphic deserialization.
      */
@@ -75,6 +69,7 @@ public class StepModule {
         Class<? extends Step> value();
     }
 
+    // region ActiveUIStepBase
     /**
      * @return json type key for ActiveUIStep.class
      */
@@ -86,16 +81,6 @@ public class StepModule {
     }
 
     /**
-     * @return json type key for ActiveUIStepBase.class
-     */
-    @Provides
-    @IntoMap
-    @StepClassKey(FormUIStep.class)
-    static String provideFormUIStep() {
-        return FormUIStepBase.TYPE_KEY;
-    }
-
-    /**
      * @return The json Deserializer for an active step.
      */
     @Provides
@@ -103,15 +88,6 @@ public class StepModule {
     @ClassKey(FormUIStep.class)
     static JsonDeserializer provideFormUIStepDeserializer() {
         return createPassthroughDeserializer(FormUIStepBase.class);
-    }
-    /**
-     * @return The json Deserializer for an input field.
-     */
-    @Provides
-    @IntoMap
-    @ClassKey(InputField.class)
-    static JsonDeserializer provideInputFieldDeserializer() {
-        return createPassthroughDeserializer(InputFieldBase.class);
     }
 
     /**
@@ -123,7 +99,9 @@ public class StepModule {
     static JsonDeserializer provideActiveUIStepDeserializer() {
         return createPassthroughDeserializer(ActiveUIStepBase.class);
     }
+    // endregion
 
+    //region SectionStepBase
     /**
      * @return json type key for SectionStepBase.class
      */
@@ -133,6 +111,31 @@ public class StepModule {
     static String provideSectionStep() {
         return SectionStepBase.TYPE_KEY;
     }
+    // endregion
+
+    // region UIStepBase
+    /**
+     * @return json type key for UIStepBase.class
+     */
+    @Provides
+    @IntoMap
+    @StepClassKey(UIStep.class)
+    static String provideUIStepMap() {
+        return UIStepBase.TYPE_KEY;
+    }
+    // endregion
+
+    // region FormUIStepBase
+    /**
+     * @return json type key for FormUIStepBase.class
+     */
+    @Provides
+    @IntoMap
+    @StepClassKey(FormUIStepBase.class)
+    static String provideFormStep() {
+        return FormUIStepBase.TYPE_KEY;
+    }
+    // endregion
 
     /**
      * @return GSON runtime type adapter factory for polymorphic deserialization of Step classes
@@ -160,57 +163,5 @@ public class StepModule {
     @ClassKey(UIStep.class)
     static JsonDeserializer provideUIStepDeserizlier() {
         return createPassthroughDeserializer(UIStepBase.class);
-    }
-
-    /**
-     * @return json type key for UIStepBase.class
-     */
-    @Provides
-    @IntoMap
-    @StepClassKey(UIStep.class)
-    static String provideUIStepMap() {
-        return UIStepBase.TYPE_KEY;
-    }
-
-    /**
-     * Returns the string corresponding to the given key in the given json object, or throws a JsonParseExecption if
-     * no such String exists.
-     *
-     * @param json
-     *         The json to get the string field from.
-     * @param key
-     *         The field to get as a string from the given json.
-     * @return The string corresponding to the given key in the given json object.
-     * @throws JsonParseException
-     *         if there is no string corresponding to the given key in the json object.
-     */
-    private static String getStringFieldNonNull(JsonObject json, String key) throws JsonParseException {
-        JsonElement element = json.get(key);
-        if (element != null) {
-            String result = element.getAsString();
-            if (result != null) {
-                return result;
-            }
-        }
-
-        throw new JsonParseException("NonNull field " + key + "of object " + json.toString() + "couldn't be parsed");
-    }
-
-    /**
-     * Returns the string from the given field or null if the given field has been ommited from the JSON
-     *
-     * @param json
-     *         the json object to get the field from
-     * @param key
-     *         the name of the field to get from the json object
-     * @return The string that corresponds to key or null if no such String exists
-     */
-    private static String getStringFieldNullable(JsonObject json, String key) {
-        JsonElement element = json.get(key);
-        if (element != null) {
-            return element.getAsString();
-        }
-
-        return null;
     }
 }
