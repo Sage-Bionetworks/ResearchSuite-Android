@@ -32,6 +32,9 @@
 
 package org.sagebionetworks.research.presentation.perform_task;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
@@ -40,6 +43,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
+import org.sagebionetworks.research.domain.presentation.R;
 import org.sagebionetworks.research.domain.presentation.model.LoadableResource;
 import org.sagebionetworks.research.domain.repository.TaskRepository;
 import org.sagebionetworks.research.domain.result.implementations.TaskResultBase;
@@ -51,6 +55,7 @@ import org.sagebionetworks.research.domain.task.Task;
 import org.sagebionetworks.research.domain.task.TaskInfo;
 import org.sagebionetworks.research.domain.task.navigation.StepNavigator;
 import org.sagebionetworks.research.domain.task.navigation.StepNavigatorFactory;
+import org.sagebionetworks.research.presentation.DisplayString;
 import org.sagebionetworks.research.presentation.mapper.TaskMapper;
 import org.sagebionetworks.research.presentation.model.BaseStepView;
 import org.sagebionetworks.research.presentation.model.StepView;
@@ -64,9 +69,6 @@ import java.util.UUID;
 
 import io.reactivex.Completable;
 import io.reactivex.disposables.CompositeDisposable;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 @MainThread
 public class PerformTaskViewModel extends ViewModel {
@@ -179,8 +181,8 @@ public class PerformTaskViewModel extends ViewModel {
                     .setNavDirection(NavDirection.SHIFT_RIGHT);
             if (backStep instanceof UIStep) {
                 UIStep uiStep = (UIStep) backStep;
-                stepViewBuilder.setTitle(uiStep.getTitle());
-                stepViewBuilder.setDetail(uiStep.getDetail());
+                stepViewBuilder.setTitle(DisplayString.create(uiStep.getTitle(), R.string.rs2_empty));
+                stepViewBuilder.setDetail(DisplayString.create(uiStep.getDetail(), R.string.rs2_empty));
             }
             stepView = stepViewBuilder.build();
         }
@@ -205,8 +207,8 @@ public class PerformTaskViewModel extends ViewModel {
                     .setNavDirection(NavDirection.SHIFT_LEFT);
             if (forwardStep instanceof UIStep) {
                 UIStep uiStep = (UIStep) forwardStep;
-                stepViewBuilder.setTitle(uiStep.getTitle());
-                stepViewBuilder.setDetail(uiStep.getDetail());
+                stepViewBuilder.setTitle(DisplayString.create(uiStep.getTitle(), R.string.rs2_empty));
+                stepViewBuilder.setDetail(DisplayString.create(uiStep.getDetail(), R.string.rs2_empty));
             }
             stepView = stepViewBuilder.build();
         }

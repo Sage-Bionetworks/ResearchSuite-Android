@@ -30,27 +30,48 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sagebionetworks.research.presentation.show_step;
+package org.sagebionetworks.research.presentation.util;
 
-import org.sagebionetworks.research.presentation.model.StepView;
-import org.sagebionetworks.research.presentation.perform_task.PerformTaskViewModel;
+import static org.junit.Assert.assertEquals;
 
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableMap;
 
-public class ShowGenericStepViewModelFactory<S extends StepView>
-        implements AbstractShowStepViewModelFactory<ShowGenericStepViewModel, S> {
+import org.junit.Test;
+import org.sagebionetworks.research.presentation.DisplayString;
+import org.threeten.bp.Duration;
 
-    @Inject
-    public ShowGenericStepViewModelFactory() {
+import java.util.Map;
+
+public class SpokenInstructionUtilTest {
+    private final ImmutableMap<String, String> INPUT_MAP = ImmutableMap.<String, String>builder()
+            .put("halfway", "Halfway text")
+            .put("countdown", "3")
+            .put("2", "Text at 2")
+            .put("5.5", "Text at 5.5")
+            .put("999", "Text at 999")
+            .build();
+
+    @Test
+    public void convert_NullStepDuration() {
+        Map<Duration, DisplayString> result = SpokenInstructionUtil.convert(null, INPUT_MAP);
+        assertEquals(3, result.size());
     }
 
-    @Override
-    public ShowGenericStepViewModel<S> create(final PerformTaskViewModel performTaskViewModel, final S stepView) {
-        return new ShowGenericStepViewModel<>(performTaskViewModel, stepView);
+    @Test
+    public void convert_StepDuration() {
+        Duration stepDuration = Duration.ofSeconds(10);
+        Map<Duration, DisplayString> result = SpokenInstructionUtil.convert(stepDuration, INPUT_MAP);
+        assertEquals(7, result.size());
+        assertEquals("Text at 999", result.get(stepDuration).getDisplayString());
     }
 
-    @Override
-    public Class<ShowGenericStepViewModel> getViewModelClass() {
-        return ShowGenericStepViewModel.class;
+    @Test
+    public void convert_StepDurationConflict() {
+        Map<Duration, DisplayString> result = SpokenInstructionUtil.convert(Duration.ofSeconds(6), INPUT_MAP);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    public void convertEntry() {
     }
 }

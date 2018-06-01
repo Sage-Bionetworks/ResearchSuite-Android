@@ -42,7 +42,7 @@ import org.sagebionetworks.research.presentation.model.StepView;
 import org.sagebionetworks.research.presentation.show_step.ShowGenericStepViewModel;
 
 public class ShowTappingActiveUIStepFragment extends ShowStepFragmentBase
-        <StepView, ShowGenericStepViewModel, TappingActiveUIStepViewBinding> {
+        <StepView, ShowGenericStepViewModel<StepView>, TappingActiveUIStepViewBinding> {
     @NonNull
     @Override
     protected TappingActiveUIStepViewBinding instantiateBinding() {

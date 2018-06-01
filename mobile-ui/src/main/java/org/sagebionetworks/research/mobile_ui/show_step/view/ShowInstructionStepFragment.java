@@ -41,7 +41,7 @@ import org.sagebionetworks.research.presentation.show_step.ShowGenericStepViewMo
 
 // TODO rkolmos 05/25/2018 Make this class use the specific types of StepView, ViewModel for an instruction step.
 public class ShowInstructionStepFragment extends ShowStepFragmentBase
-        <StepView, ShowGenericStepViewModel, UIStepViewBinding> {
+        <StepView, ShowGenericStepViewModel<StepView>, UIStepViewBinding> {
     @NonNull
     @Override
     protected UIStepViewBinding instantiateBinding() {

@@ -32,6 +32,8 @@
 
 package org.sagebionetworks.research.mobile_ui.perform_task;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
@@ -49,8 +51,8 @@ import org.sagebionetworks.research.domain.mobile_ui.R;
 import org.sagebionetworks.research.domain.result.implementations.TaskResultBase;
 import org.sagebionetworks.research.domain.result.interfaces.TaskResult;
 import org.sagebionetworks.research.mobile_ui.mapper.StepMapper;
-import org.sagebionetworks.research.mobile_ui.show_step.view.ShowStepFragment;
 import org.sagebionetworks.research.mobile_ui.show_step.view.ShowStepFragmentBase;
+import org.sagebionetworks.research.mobile_ui.show_step.view.ShowStepFragmentFactory;
 import org.sagebionetworks.research.presentation.model.StepView;
 import org.sagebionetworks.research.presentation.model.StepView.NavDirection;
 import org.sagebionetworks.research.presentation.model.TaskView;
@@ -62,15 +64,14 @@ import org.threeten.bp.Instant;
 
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import dagger.android.AndroidInjector;
 import dagger.android.DispatchingAndroidInjector;
 import dagger.android.support.AndroidSupportInjection;
 import dagger.android.support.HasSupportFragmentInjector;
-import javax.inject.Inject;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -87,6 +88,9 @@ public class PerformTaskFragment extends Fragment implements HasSupportFragmentI
 
     @Inject
     PerformTaskViewModelFactory taskViewModelFactory;
+
+    @Inject
+    ShowStepFragmentFactory showStepFragmentFactory;
 
     private ShowStepFragmentBase currentStepFragment;
 
@@ -185,10 +189,9 @@ public class PerformTaskFragment extends Fragment implements HasSupportFragmentI
             }
             return;
         }
-        StepMapper mapper = new StepMapper(this);
-        ShowStepFragment step = mapper.create(stepView);
+        ShowStepFragmentBase showStepFragmentBase = showStepFragmentFactory.create(stepView);
 
-        currentStepFragment = step;
+        currentStepFragment = showStepFragmentBase;
 
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 
@@ -199,7 +202,7 @@ public class PerformTaskFragment extends Fragment implements HasSupportFragmentI
         }
 
         transaction
-                .replace(R.id.rs2_step_container, step, stepView.getIdentifier())
+                .replace(R.id.rs2_step_container, showStepFragmentBase, stepView.getIdentifier())
                 .commit();
     }
 }

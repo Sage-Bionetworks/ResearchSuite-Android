@@ -30,27 +30,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sagebionetworks.research.presentation.show_step;
+package org.sagebionetworks.research.presentation.model.parcelable;
 
-import org.sagebionetworks.research.presentation.model.StepView;
-import org.sagebionetworks.research.presentation.perform_task.PerformTaskViewModel;
+import org.sagebionetworks.research.presentation.DisplayString;
+import org.threeten.bp.Duration;
 
-import javax.inject.Inject;
-
-public class ShowGenericStepViewModelFactory<S extends StepView>
-        implements AbstractShowStepViewModelFactory<ShowGenericStepViewModel, S> {
-
-    @Inject
-    public ShowGenericStepViewModelFactory() {
-    }
-
+public class DurationToDisplayStringMapAdapter extends ToStringKeyMapAdapterBase<Duration, DisplayString> {
     @Override
-    public ShowGenericStepViewModel<S> create(final PerformTaskViewModel performTaskViewModel, final S stepView) {
-        return new ShowGenericStepViewModel<>(performTaskViewModel, stepView);
-    }
-
-    @Override
-    public Class<ShowGenericStepViewModel> getViewModelClass() {
-        return ShowGenericStepViewModel.class;
+    public Duration fromString(final String string) {
+        return Duration.parse(string);
     }
 }

@@ -36,6 +36,8 @@ import android.app.Activity;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.app.Fragment;
 
+import com.jakewharton.threetenabp.AndroidThreeTen;
+
 import org.sagebionetworks.research.app.inject.DaggerResearchStackDemoApplicationComponent;
 
 import dagger.android.AndroidInjector;
@@ -55,6 +57,7 @@ public class ResearchStackDemoApplication extends MultiDexApplication implements
     @Override
     public void onCreate() {
         super.onCreate();
+        AndroidThreeTen.init(this);
         DaggerResearchStackDemoApplicationComponent
                 .builder()
                 .application(this)

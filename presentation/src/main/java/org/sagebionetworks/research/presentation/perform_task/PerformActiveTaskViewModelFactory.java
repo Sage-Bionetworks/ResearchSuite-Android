@@ -32,6 +32,10 @@
 
 package org.sagebionetworks.research.presentation.perform_task;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProvider;
 import android.support.annotation.NonNull;
 
 import org.sagebionetworks.research.domain.repository.TaskRepository;
@@ -40,18 +44,43 @@ import org.sagebionetworks.research.presentation.mapper.TaskMapper;
 import org.sagebionetworks.research.presentation.model.TaskView;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
+import javax.inject.Inject;
 
-public class PerformActiveTaskViewModel extends PerformTaskViewModel {
+public class PerformActiveTaskViewModelFactory {
+    private final StepNavigatorFactory stepNavigatorFactory;
 
-    public PerformActiveTaskViewModel(@NonNull final TaskView taskView,
-            @NonNull final UUID taskRunUUID,
-            @NonNull final StepNavigatorFactory stepNavigatorFactory,
-            @NonNull final TaskRepository taskRepository,
-            @NonNull final TaskMapper taskMapper) {
-        super(taskView, taskRunUUID, stepNavigatorFactory, taskRepository, taskMapper);
+    private final TaskMapper taskMapper;
+
+    private final TaskRepository taskRepository;
+
+    // TODO: recorder service
+    // TODO: tts service
+
+    @Inject
+    public PerformActiveTaskViewModelFactory(StepNavigatorFactory stepNavigatorFactory, TaskMapper taskMapper,
+            final TaskRepository taskRepository) {
+        this.stepNavigatorFactory = stepNavigatorFactory;
+        this.taskMapper = taskMapper;
+        this.taskRepository = taskRepository;
     }
 
+    public ViewModelProvider.Factory create(@NonNull TaskView taskView, @NonNull UUID taskRunUUID) {
+        checkNotNull(taskView);
+        checkNotNull(taskRunUUID);
+
+        return new ViewModelProvider.Factory() {
+            @NonNull
+            @Override
+            @SuppressWarnings(value = "unchecked")
+            public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+                if (modelClass.isAssignableFrom(PerformTaskViewModel.class)) {
+                    // noinspection unchecked
+                    return (T) new PerformTaskViewModel(taskView, taskRunUUID, stepNavigatorFactory,
+                            taskRepository, taskMapper);
+                }
+                throw new IllegalArgumentException("Unknown ViewModel class");
+            }
+        };
+    }
 }

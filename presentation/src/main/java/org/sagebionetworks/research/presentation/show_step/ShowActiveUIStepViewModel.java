@@ -34,34 +34,85 @@ package org.sagebionetworks.research.presentation.show_step;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.LiveDataReactiveStreams;
+import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.VisibleForTesting;
 
+import org.sagebionetworks.research.presentation.DisplayString;
 import org.sagebionetworks.research.presentation.model.ActiveUIStepView;
+import org.sagebionetworks.research.presentation.perform_task.PerformActiveTaskViewModel;
+import org.threeten.bp.Duration;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
-import io.reactivex.internal.operators.flowable.FlowableFromObservable;
+import io.reactivex.disposables.CompositeDisposable;
 
-public class ShowActiveUIStepViewModel<S extends ActiveUIStepView> extends ShowStepViewModel<S> {
-    public LiveData<Long> getCountdown() {
-        // TODO: implement real count
-        return LiveDataReactiveStreams.fromPublisher(
-                new FlowableFromObservable<>(
-                        Observable.<Long>intervalRange(10, 1, 1, 10, TimeUnit.SECONDS)
-                                .map(i -> 10 - i)));
+public class ShowActiveUIStepViewModel<S extends ActiveUIStepView> extends ShowGenericStepViewModel<S> {
+    private final CompositeDisposable compositeDisposable;
+
+    private final LiveData<Long> countdownLiveData;
+
+    private final PerformActiveTaskViewModel performActiveTaskViewModel;
+
+    private final LiveData<DisplayString> spokenInstructions;
+
+    private final S stepView;
+
+    private final MutableLiveData<S> stepViewLiveData;
+
+    public ShowActiveUIStepViewModel(PerformActiveTaskViewModel performTaskViewModel, S stepView) {
+        super(performTaskViewModel, stepView);
+
+        this.performActiveTaskViewModel = performTaskViewModel;
+        this.stepView = stepView;
+        this.stepViewLiveData = new MutableLiveData<>();
+        this.compositeDisposable = new CompositeDisposable();
+
+        stepViewLiveData.setValue(stepView);
+        countdownLiveData = LiveDataReactiveStreams.fromPublisher(
+                getCountdownObservable().toFlowable(BackpressureStrategy.LATEST));
+        spokenInstructions = LiveDataReactiveStreams.fromPublisher(
+                getSpokenInstructionsObservable().toFlowable(BackpressureStrategy.BUFFER));
     }
 
-    public LiveData<String> getSpokenInstructions() {
-        return null;
+    public LiveData<Long> getCountdown() {
+        return countdownLiveData;
+    }
+
+    public LiveData<DisplayString> getSpokenInstructions() {
+        return spokenInstructions;
     }
 
     @Override
     public LiveData<S> getStepView() {
-        return null;
+        return stepViewLiveData;
     }
 
-    @Override
-    public void handleAction(final String actionType) {
+    @VisibleForTesting
+    Observable<Long> getCountdownObservable() {
+        // TODO: countdown based on spokenInstructions, allowing for fractional duration
+        Duration duration = stepView.getDuration();
+        if (duration == null) {
+            return Observable.never();
+        }
 
+        return Observable.intervalRange(0, duration.getSeconds(), 0, 1, TimeUnit.SECONDS)
+                .map(i -> duration.getSeconds() - i)
+                .doOnComplete(performActiveTaskViewModel::goForward);
+    }
+
+    @VisibleForTesting
+    Observable<DisplayString> getSpokenInstructionsObservable() {
+        return Observable.empty();
+
+//        Map<Long, DisplayString> spokenInstructions = stepView.getSpokenInstructions();
+//        if (spokenInstructions == null) {
+//            return Observable.empty();
+//        }
+//        return Observable.interval(1, TimeUnit.SECONDS)
+//                .map(spokenInstructions::get)
+//                .filter(spokenInstruction -> spokenInstruction != null);
     }
 }

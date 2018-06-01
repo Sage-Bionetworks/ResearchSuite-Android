@@ -32,32 +32,48 @@
 
 package org.sagebionetworks.research.presentation.model;
 
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.google.auto.value.AutoValue;
 
 import org.sagebionetworks.research.presentation.ActionType;
 import org.sagebionetworks.research.presentation.DisplayString;
 
-public class StepActionView {
-    @NonNull
-    public final String actionType;
+@AutoValue
+public abstract class StepActionView implements Parcelable {
 
-    public final int iconRes;
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract StepActionView build();
 
-    public final boolean isEnabled;
+        public abstract Builder setActionType(@NonNull @ActionType String actionType);
 
-    public final boolean isHidden;
+        public abstract Builder setEnabled(boolean isEnabled);
 
-    @NonNull
-    public final DisplayString title;
+        public abstract Builder setHidden(boolean isHidden);
 
-    public StepActionView(@NonNull @ActionType String actionType, @NonNull DisplayString title,
-            @DrawableRes int iconRes,
-            boolean isHidden, boolean isEnabled) {
-        this.actionType = actionType;
-        this.title = title;
-        this.iconRes = iconRes;
-        this.isHidden = isHidden;
-        this.isEnabled = isEnabled;
+        public abstract Builder setIconRes(@Nullable @DrawableRes Integer iconRes);
+
+        public abstract Builder setTitle(@NonNull DisplayString title);
     }
+
+    public static Builder builder() {
+        return new AutoValue_StepActionView.Builder();
+    }
+
+    @NonNull
+    public abstract String getActionType();
+
+    @DrawableRes
+    public abstract Integer getIconRes();
+
+    @NonNull
+    public abstract DisplayString getTitle();
+
+    public abstract boolean isEnabled();
+
+    public abstract boolean isHidden();
 }

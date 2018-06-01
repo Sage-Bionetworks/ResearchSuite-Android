@@ -32,21 +32,36 @@
 
 package org.sagebionetworks.research.presentation.model;
 
+import static java.lang.annotation.RetentionPolicy.SOURCE;
+
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.google.common.collect.ImmutableSet;
+import com.ryanharter.auto.value.parcel.ParcelAdapter;
 
+import org.sagebionetworks.research.presentation.DisplayString;
+import org.sagebionetworks.research.presentation.model.parcelable.ImmutableSetAdapter;
 import java.lang.annotation.Retention;
-
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 /**
  * Map a {@link Step} to a {@link StepView} when data is moving from the Domain layer to this layer.
  */
 public interface StepView extends Parcelable {
+    class ImmutableStepActionViewSetAdapter extends ImmutableSetAdapter<StepActionView> {
+        @Override
+        protected Creator<? extends StepActionView> getCreator() {
+            return AutoValue_StepActionView.CREATOR;
+        }
+
+        @Override
+        protected StepActionView[] getEmptyArray() {
+            return new StepActionView[0];
+        }
+    }
+
     @Retention(SOURCE)
     @IntDef({NavDirection.SHIFT_LEFT, NavDirection.SHIFT_RIGHT})
     @interface NavDirection {
@@ -54,17 +69,18 @@ public interface StepView extends Parcelable {
         int SHIFT_RIGHT = -1;
     }
 
+    @Nullable
+    DisplayString getDetail();
+
     @NonNull
     String getIdentifier();
-
-    @Nullable
-    String getDetail();
 
     @NavDirection int getNavDirection();
 
     @NonNull
+    @ParcelAdapter(ImmutableStepActionViewSetAdapter.class)
     ImmutableSet<StepActionView> getStepActionViews();
 
     @Nullable
-    String getTitle();
+    DisplayString getTitle();
 }

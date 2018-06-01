@@ -39,12 +39,13 @@ import org.sagebionetworks.research.mobile_ui.show_step.view.view_binding.Active
 import org.sagebionetworks.research.mobile_ui.show_step.view.view_binding.StepViewBinding;
 import org.sagebionetworks.research.mobile_ui.widget.ActionButton;
 import org.sagebionetworks.research.presentation.ActionType;
+import org.sagebionetworks.research.presentation.model.ActiveUIStepView;
 import org.sagebionetworks.research.presentation.model.StepView;
 import org.sagebionetworks.research.presentation.show_step.ShowGenericStepViewModel;
 
 // TODO rkolmos 05/25/2018 Make this class use the specific types of StepView, ViewModel for an ActiveUIStep step.
 public class ShowActiveUIStepFragment extends ShowStepFragmentBase
-        <StepView, ShowGenericStepViewModel, ActiveUIStepViewBinding> {
+        <ActiveUIStepView, ShowGenericStepViewModel<ActiveUIStepView>, ActiveUIStepViewBinding> {
     @Override
     protected ActiveUIStepViewBinding instantiateBinding() {
         return new ActiveUIStepViewBinding();

@@ -30,27 +30,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sagebionetworks.research.presentation.show_step;
+package org.sagebionetworks.research.presentation.model.parcelable;
 
-import org.sagebionetworks.research.presentation.model.StepView;
-import org.sagebionetworks.research.presentation.perform_task.PerformTaskViewModel;
+import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.primitives.ImmutableLongArray;
+import com.ryanharter.auto.value.parcel.TypeAdapter;
 
-public class ShowGenericStepViewModelFactory<S extends StepView>
-        implements AbstractShowStepViewModelFactory<ShowGenericStepViewModel, S> {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-    @Inject
-    public ShowGenericStepViewModelFactory() {
+public class LongMapAdapter<V extends Parcelable> implements TypeAdapter<ImmutableMap<Long, V>> {
+    private static final String MAP_KEYS = "LONG_KEYS";
+
+    @Override
+    public ImmutableMap<Long, V> fromParcel(final Parcel in) {
+        Bundle longMapBundle = in.readBundle(getClass().getClassLoader());
+        long[] longKeys = longMapBundle.getLongArray(MAP_KEYS);
+        if (longKeys == null) {
+            return null;
+        }
+        Map<Long, V> longMap = new HashMap<>(longKeys.length);
+        for (Long key : longKeys) {
+            longMap.put(key, longMapBundle.getParcelable(key.toString()));
+        }
+        return ImmutableMap.copyOf(longMap);
     }
 
     @Override
-    public ShowGenericStepViewModel<S> create(final PerformTaskViewModel performTaskViewModel, final S stepView) {
-        return new ShowGenericStepViewModel<>(performTaskViewModel, stepView);
-    }
-
-    @Override
-    public Class<ShowGenericStepViewModel> getViewModelClass() {
-        return ShowGenericStepViewModel.class;
+    public void toParcel(final ImmutableMap<Long, V> value, final Parcel dest) {
+        Bundle longMapBundle = new Bundle();
+        longMapBundle.putLongArray(MAP_KEYS, ImmutableLongArray.copyOf(value.keySet()).toArray());
+        for (Entry<Long, ? extends Parcelable> entry : value.entrySet()) {
+            longMapBundle.putParcelable(entry.getKey().toString(), entry.getValue());
+        }
+        dest.writeBundle(longMapBundle);
     }
 }

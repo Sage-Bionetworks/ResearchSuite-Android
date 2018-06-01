@@ -32,22 +32,28 @@
 
 package org.sagebionetworks.research.app;
 
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.hamcrest.Matchers.allOf;
+
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.ViewInteraction;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import org.junit.*;
-import org.junit.runner.*;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.sagebionetworks.research.presentation.model.TaskView;
 
 import java.util.UUID;
-
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
@@ -68,6 +74,21 @@ public class PerformFooTaskTest {
 
     @Test
     public void showsStep() {
-        onView(withText("Step 1")).check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.title), isDisplayed()))
+                .check(matches(withText("Step 1")));
+
+        checkAndClickNext();
+
+        onView(allOf(withId(R.id.title), isDisplayed()))
+                .check(matches(withText("How happy are you?")));
+
+        checkAndClickNext();
+
+    }
+
+    private void checkAndClickNext() {
+        ViewInteraction nextActionButton = onView(withId(R.id.rs2_step_navigation_action_forward));
+        nextActionButton.check(matches(isDisplayed()));
+        nextActionButton.perform(click());
     }
 }

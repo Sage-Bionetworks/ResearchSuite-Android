@@ -38,9 +38,8 @@ import android.support.annotation.Nullable;
 
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.TypeAdapter;
 
+import org.sagebionetworks.research.presentation.DisplayString;
 import java.util.Collections;
 import java.util.Set;
 
@@ -53,7 +52,7 @@ public abstract class BaseStepView implements StepView, Parcelable {
     public abstract static class Builder {
         public abstract BaseStepView build();
 
-        public abstract Builder setDetail(@Nullable String description);
+        public abstract Builder setDetail(@Nullable DisplayString description);
 
         public abstract Builder setIdentifier(@NonNull String identifier);
 
@@ -61,17 +60,13 @@ public abstract class BaseStepView implements StepView, Parcelable {
 
         public abstract Builder setStepActionViews(@NonNull Set<StepActionView> stepActionViews);
 
-        public abstract Builder setTitle(@Nullable String title);
+        public abstract Builder setTitle(@Nullable DisplayString title);
     }
 
     public static Builder builder() {
         return new AutoValue_BaseStepView.Builder()
                 .setNavDirection(NavDirection.SHIFT_LEFT)
                 .setStepActionViews(Collections.emptySet());
-    }
-
-    public static TypeAdapter<BaseStepView> typeAdapter(Gson gson) {
-        return new AutoValue_BaseStepView.GsonTypeAdapter(gson);
     }
 
     public abstract String getIdentifier();

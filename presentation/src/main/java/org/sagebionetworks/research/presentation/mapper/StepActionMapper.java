@@ -51,32 +51,37 @@ public class StepActionMapper {
     }
 
     StepActionView create(StepAction stepAction) {
-        String actionType = null;
-        DisplayString displayString = null;
-        int iconRes = 0;         // TODO: implement default iconRes
+
+        StepActionView.Builder builder = StepActionView.builder();
 
         switch (stepAction.actionType) {
             case CUSTOM:
                 StepCustomAction stepCustomAction = (StepCustomAction) stepAction;
-                displayString = new DisplayString(R.string.rs2_empty,
-                        stepAction.title);
-                actionType = stepCustomAction.customActionType;
+                builder.setTitle(DisplayString.create(stepAction.title, null));
+                builder.setActionType(stepCustomAction.customActionType);
                 break;
             case NAVIGATION:
                 StepNavigationAction stepNavigationAction = (StepNavigationAction) stepAction;
                 switch (stepNavigationAction.navigationActionType) {
-                    // TODO: implement other actions
                     case FORWARD:
-                        displayString = new DisplayString(R.string.rs2_navigation_action_forward,
-                                stepNavigationAction.title);
-                        actionType = ActionType.FORWARD;
+                        builder.setTitle(DisplayString
+                                .create(stepNavigationAction.title, R.string.rs2_navigation_action_forward));
+                        builder.setActionType(ActionType.FORWARD);
+                        break;
+                    case BACKWARD:
+                        builder.setTitle(DisplayString
+                                .create(stepNavigationAction.title, R.string.rs2_navigation_action_backward));
+                        builder.setActionType(ActionType.BACKWARD);
+                        break;
+//                    case LEARN_MORE:
+//                        builder.setTitle(DisplayString
+//                                .create(stepNavigationAction.title, R.string.rs2_navigation_action_lean_more));
+//                        builder.setActionType(ActionType.LEARN_MORE);
+//                        break;
+                    // TODO: implement other actions
                 }
         }
 
-        if (displayString == null) {
-            throw new IllegalArgumentException("Unknown stepAction: " + stepAction);
-        }
-
-        return new StepActionView(actionType, displayString, iconRes, false, true);
+        return builder.build();
     }
 }

@@ -42,16 +42,16 @@ import org.sagebionetworks.research.presentation.perform_task.PerformTaskViewMod
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShowGenericStepViewModel extends ShowStepViewModel<StepView> {
+public class ShowGenericStepViewModel<S extends StepView> extends ShowStepViewModel<S> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ShowGenericStepViewModel.class);
 
     protected final PerformTaskViewModel performTaskViewModel;
 
-    protected final MutableLiveData<StepView> showStepViewModelMutableLiveData;
+    protected final MutableLiveData<S> showStepViewModelMutableLiveData;
 
     protected final StepView stepView;
 
-    public ShowGenericStepViewModel(PerformTaskViewModel performTaskViewModel, StepView stepView) {
+    public ShowGenericStepViewModel(PerformTaskViewModel performTaskViewModel, S stepView) {
         this.performTaskViewModel = performTaskViewModel;
         this.stepView = stepView;
 
@@ -60,7 +60,7 @@ public class ShowGenericStepViewModel extends ShowStepViewModel<StepView> {
     }
 
     @Override
-    public LiveData<StepView> getStepView() {
+    public LiveData<S> getStepView() {
         return showStepViewModelMutableLiveData;
     }
 

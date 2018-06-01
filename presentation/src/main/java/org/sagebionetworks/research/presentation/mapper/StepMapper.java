@@ -36,14 +36,25 @@ import android.support.annotation.Nullable;
 
 import com.google.common.base.Function;
 
+import org.sagebionetworks.research.domain.step.interfaces.ActiveUIStep;
 import org.sagebionetworks.research.domain.step.interfaces.Step;
+import org.sagebionetworks.research.presentation.model.ActiveUIStepView;
 import org.sagebionetworks.research.presentation.model.BaseStepView;
 import org.sagebionetworks.research.presentation.model.StepView;
-import org.sagebionetworks.research.presentation.model.StepView.NavDirection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.threeten.bp.Duration;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Inject;
 
 public class StepMapper implements Function<Step, StepView> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StepMapper.class);
+
+
     @Inject
     public StepMapper() {
     }
@@ -56,7 +67,25 @@ public class StepMapper implements Function<Step, StepView> {
         }
         return BaseStepView.builder()
                 .setIdentifier(input.getIdentifier())
-                .setNavDirection(NavDirection.SHIFT_LEFT)
                 .build();
     }
+
+    ActiveUIStepView apply(ActiveUIStep input) {
+        ActiveUIStepView.Builder builder = ActiveUIStepView.builder()
+                .setIdentifier(input.getIdentifier());
+
+        Duration stepDuration = null;
+        Double durationInSeconds = input.getDuration();
+        if (durationInSeconds != null) {
+            stepDuration = Duration.ofMillis((long) (1_000L * input.getDuration()));
+        }
+
+        Map<Long, String> spokenInstructions = new HashMap<>();
+        for (Entry<String, String> entry : input.getSpokenInstructions().entrySet()) {
+
+        }
+
+        return builder.build();
+    }
+
 }

@@ -34,12 +34,18 @@ package org.sagebionetworks.research.domain.step.interfaces;
 
 import android.support.annotation.Nullable;
 
+import java.util.Map;
+
 /**
- * An ActiveUIStep is a step which asks the user to perform a task. Typically they have a duration
- * which defines how long the user should perform the task for. ActiveUISteps also have spoken instructions
- * that can be read to the user.
+ * An ActiveUIStep is a step which asks the user to perform a task. Typically they have a duration which defines how
+ * long the user should perform the task for. ActiveUISteps also have spoken instructions that can be read to the
+ * user.
  */
 public interface ActiveUIStep extends UIStep {
+    enum SpokenInstructionKey {
+        start, halfway, countdown, end
+    }
+
     /**
      * The duration of time in seconds to run the step. If null, then this value is ignored.
      *
@@ -55,21 +61,20 @@ public interface ActiveUIStep extends UIStep {
     // TODO: commands
 
     /**
-     * Whether or not the step uses audio, such as the speech synthesizer, that should play whether or not the user has
-     * the mute switch turned on.
+     * Localized text that represents an instructional voice prompt. Instructional speech begins when the step passes
+     * the time indicated by the given time.  If `timeInterval` is greater than or equal to `duration` or is equal to
+     * `Double.infinity`, then the spoken instruction returned should be for when the step is finished. - parameter
+     * timeInterval: The time interval at which to speak the instruction. - returns: The localized instruction to
+     * speak or `nil` if there isn't an instruction. spokenInstruction(at timeInterval: TimeInterval) -> String?
+     */
+    @Nullable
+    Map<String, String> getSpokenInstructions();
+
+    /**
+     * Whether or not the step uses audio, such as the speech synthesizer, that should play whether or not the user
+     * has the mute switch turned on.
      *
      * @return whether the step requires background audio
      */
     boolean isBackgroundAudioRequired();
-
-    // TODO: spoken instructions
-    /**
-     * Localized text that represents an instructional voice prompt. Instructional speech begins when the step passes
-     * the time indicated by the given time.  If `timeInterval` is greater than or equal to `duration` or is equal to
-     * `Double.infinity`, then the spoken instruction returned should be for when the step is finished.
-     *  - parameter timeInterval: The time interval at which to speak the instruction.
-     *  - returns: The localized
-     *  instruction to speak or `nil` if there isn't an instruction.
-     *  spokenInstruction(at timeInterval: TimeInterval) -> String?
-     */
 }

@@ -50,14 +50,27 @@ import java.util.Set;
 
 
 public class CollectionInputDataType extends InputDataType {
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({CollectionType.SINGLE_CHOICE, CollectionType.MULTIPLE_CHOICE})
+    public @interface CollectionType {
+        String SINGLE_CHOICE = "singleChoice";
+        String MULTIPLE_CHOICE = "multipleChoice";
+        // TODO: MULTIPLE_COMPONENT unsupported for now, remove on iOS or implement here
+        // String MULTIPLE_COMPONENT = "multipleComponent";
+
+        Set<String> ALL = new HashSet<String>(Arrays.asList(
+                new String[]{SINGLE_CHOICE, MULTIPLE_CHOICE,}));
+    }
+
     public static final String DELIMINATOR = ".";
+
+    @Nullable
+    @BaseType
+    private final String baseType;
 
     @NonNull
     @CollectionType
     private final String collectionType;
-    @Nullable
-    @BaseType
-    private final String baseType;
 
     /**
      * Default initializer for gson.
@@ -81,32 +94,21 @@ public class CollectionInputDataType extends InputDataType {
         this.baseType = null;
     }
 
-    @NonNull
-    @CollectionType
-    public String getCollectionType() {
-        return this.collectionType;
-    }
-
     @Nullable
     @BaseType
     public String getBaseType() {
         return this.baseType;
     }
 
+    @NonNull
+    @CollectionType
+    public String getCollectionType() {
+        return this.collectionType;
+    }
+
     @Override
     public String toString() {
         return this.collectionType + DELIMINATOR + this.baseType;
-    }
-
-    @Retention(RetentionPolicy.SOURCE)
-    @StringDef({CollectionType.SINGLE_CHOICE, CollectionType.MULTIPLE_CHOICE, CollectionType.MULTIPLE_COMPONENT})
-    public @interface CollectionType {
-        String SINGLE_CHOICE = "singleChoice";
-        String MULTIPLE_CHOICE = "multipleChoice";
-        String MULTIPLE_COMPONENT = "multipleComponent";
-
-        Set<String> ALL = new HashSet<String>(Arrays.asList(
-                new String[]{SINGLE_CHOICE, MULTIPLE_CHOICE, MULTIPLE_COMPONENT}));
     }
 
     @Override

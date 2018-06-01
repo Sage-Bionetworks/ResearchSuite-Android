@@ -1,6 +1,5 @@
 {
   "identifier": "foo",
-  "asyncActions": [],
   "actions": {
     "cancel": {
       "iconName": "closeActivity"
@@ -132,11 +131,6 @@
         "halfway": "Halfway there",
         "end": "Stop moving"
       }
-    },
-    {
-      "identifier":"left",
-      "type":"transform",
-      "resourceTransformer": { "resourceName": "TremorSectionStep.json"}
     }
   ]
 }

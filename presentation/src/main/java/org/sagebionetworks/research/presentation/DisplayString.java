@@ -32,20 +32,26 @@
 
 package org.sagebionetworks.research.presentation;
 
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 
-public class DisplayString {
+import com.google.auto.value.AutoValue;
+
+@AutoValue
+public abstract class DisplayString implements Parcelable {
+
+    public static DisplayString create(@Nullable String displayString,
+            @StringRes @Nullable Integer defaultDisplayStringRes) {
+        return new AutoValue_DisplayString(defaultDisplayStringRes, displayString);
+    }
+
     // resource id for string to display
     @StringRes
-    public final int defaultDisplayStringRes;
+    @Nullable
+    public abstract Integer getDefaultDisplayStringRes();
 
     // string to display, overrides defaultDisplayStringRes
     @Nullable
-    public final String displayString;
-
-    public DisplayString(@StringRes final int defaultDisplayStringRes, @Nullable final String displayString) {
-        this.defaultDisplayStringRes = defaultDisplayStringRes;
-        this.displayString = displayString;
-    }
+    public abstract String getDisplayString();
 }

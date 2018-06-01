@@ -57,7 +57,13 @@ public abstract class InstructionStep implements ActiveUIStep {
         public abstract Builder setActions(@NonNull Map<String, UIAction> actions);
 
         @NonNull
+        public abstract Builder setBackgroundAudioRequired(boolean isBackgroundAudioRequired);
+
+        @NonNull
         public abstract Builder setDetail(@Nullable String detail);
+
+        @NonNull
+        public abstract Builder setDuration(@Nullable Double duration);
 
         @NonNull
         public abstract Builder setFootnote(@Nullable String footnote);
@@ -66,16 +72,13 @@ public abstract class InstructionStep implements ActiveUIStep {
         public abstract Builder setIdentifier(@NonNull String identifier);
 
         @NonNull
+        public abstract Builder setSpokenInstructions(Map<String, String> spokenInstructions);
+
+        @NonNull
         public abstract Builder setText(@Nullable String text);
 
         @NonNull
         public abstract Builder setTitle(@Nullable String title);
-
-        @NonNull
-        public abstract Builder setDuration(@Nullable Double duration);
-
-        @NonNull
-        public abstract Builder setBackgroundAudioRequired(boolean isBackgroundAudioRequired);
     }
 
     public static final String TYPE_KEY = "instruction";

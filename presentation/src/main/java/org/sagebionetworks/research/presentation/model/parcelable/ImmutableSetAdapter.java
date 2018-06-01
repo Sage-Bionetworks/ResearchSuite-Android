@@ -30,27 +30,27 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.sagebionetworks.research.presentation.show_step;
+package org.sagebionetworks.research.presentation.model.parcelable;
 
-import org.sagebionetworks.research.presentation.model.StepView;
-import org.sagebionetworks.research.presentation.perform_task.PerformTaskViewModel;
+import android.os.Parcel;
+import android.os.Parcelable;
 
-import javax.inject.Inject;
+import com.google.common.collect.ImmutableSet;
+import com.ryanharter.auto.value.parcel.TypeAdapter;
 
-public class ShowGenericStepViewModelFactory<S extends StepView>
-        implements AbstractShowStepViewModelFactory<ShowGenericStepViewModel, S> {
-
-    @Inject
-    public ShowGenericStepViewModelFactory() {
+public abstract class ImmutableSetAdapter<T extends Parcelable> implements TypeAdapter<ImmutableSet<T>> {
+    @Override
+    public ImmutableSet<T> fromParcel(final Parcel in) {
+        T[] values = in.createTypedArray(getCreator());
+        return ImmutableSet.copyOf(values);
     }
 
     @Override
-    public ShowGenericStepViewModel<S> create(final PerformTaskViewModel performTaskViewModel, final S stepView) {
-        return new ShowGenericStepViewModel<>(performTaskViewModel, stepView);
+    public void toParcel(final ImmutableSet<T> value, final Parcel dest) {
+        dest.writeTypedArray(value.toArray(getEmptyArray()), 0);
     }
 
-    @Override
-    public Class<ShowGenericStepViewModel> getViewModelClass() {
-        return ShowGenericStepViewModel.class;
-    }
+    protected abstract Parcelable.Creator<? extends T> getCreator();
+
+    protected abstract T[] getEmptyArray();
 }

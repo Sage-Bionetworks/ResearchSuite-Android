@@ -32,59 +32,57 @@
 
 package org.sagebionetworks.research.presentation.model;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import static org.junit.Assert.assertEquals;
 
-import com.google.auto.value.AutoValue;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import android.os.Parcel;
+
 import com.google.common.collect.ImmutableMap;
-import com.ryanharter.auto.value.parcel.ParcelAdapter;
 
+import org.junit.Test;
 import org.sagebionetworks.research.presentation.DisplayString;
-import org.sagebionetworks.research.presentation.model.parcelable.DurationToDisplayStringMapAdapter;
+import org.sagebionetworks.research.presentation.model.StepView.NavDirection;
 import org.threeten.bp.Duration;
+import org.threeten.bp.temporal.TemporalUnit;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-@AutoValue
-public abstract class ActiveUIStepView implements StepView {
+public class ActiveUIStepViewTest {
 
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract ActiveUIStepView build();
-
-        public abstract Builder setDetail(@Nullable DisplayString description);
-
-        public abstract Builder setDuration(@Nullable Duration duration);
-
-        public abstract Builder setIdentifier(@NonNull String identifier);
-
-        public abstract Builder setNavDirection(@NavDirection int navDirection);
-
-        public abstract Builder setSpokenInstructions(@NonNull Map<Duration, DisplayString> spokenInstructions);
-
-        public abstract Builder setStepActionViews(@NonNull Set<StepActionView> stepActionViews);
-
-        public abstract Builder setTitle(@Nullable DisplayString title);
+    @Test(expected = IllegalStateException.class)
+    public void testBuildFailsWIthNoId() {
+        ActiveUIStepView.builder()
+                .build();
     }
 
-    /**
-     * @return builder for an ActiveUIStepView with default NavDirection.SHIFT_LEFT
-     */
-    public static Builder builder() {
-        return new AutoValue_ActiveUIStepView.Builder()
-                .setNavDirection(NavDirection.SHIFT_LEFT)
-                .setSpokenInstructions(Collections.emptyMap())
-                .setStepActionViews(Collections.emptySet());
+    @Test
+    public void testBuildSucceedsWithOnlyIdProvided() {
+        ActiveUIStepView.builder()
+                .setIdentifier("id")
+                .build();
     }
 
-    @Nullable
-    public abstract Duration getDuration();
+    @Test
+    public void testParcelable() {
+        ActiveUIStepView activeUIStepView = ActiveUIStepView.builder()
+                .setIdentifier("id")
+                .setDetail(DisplayString.create("detail", 5))
+                .setNavDirection(NavDirection.SHIFT_RIGHT)
+//                .setStepActionViews(ImmutableSet.of(
+//                        StepActionView.create(ActionType.FORWARD, 0,
+//                                DisplayString.create("forward", R.string.rs2_navigation_action_forward), true, true)))
+                .setTitle(DisplayString.create("title", 10))
+                .setDuration(Duration.ofSeconds(30))
+                .setSpokenInstructions(ImmutableMap.of(Duration.ofSeconds(1), DisplayString.create("text1", 9)))
+                .build();
 
-    @NonNull
-    @ParcelAdapter(DurationToDisplayStringMapAdapter.class)
-    public abstract ImmutableMap<Duration, DisplayString> getSpokenInstructions();
+        Parcel parcel = Parcel.obtain();
+        activeUIStepView.writeToParcel(parcel, activeUIStepView.describeContents());
+        parcel.setDataPosition(0);
 
-    public abstract Builder toBuilder();
+        ActiveUIStepView createdFromParcel = AutoValue_ActiveUIStepView.CREATOR.createFromParcel(parcel);
+
+        assertEquals(activeUIStepView, createdFromParcel);
+    }
 }

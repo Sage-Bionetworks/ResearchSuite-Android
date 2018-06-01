@@ -49,7 +49,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Shows a simple step.
  */
-public class ShowStepFragment extends ShowStepFragmentBase<StepView, ShowGenericStepViewModel, StepViewBinding> {
+public class ShowStepFragment extends ShowStepFragmentBase<StepView, ShowGenericStepViewModel<StepView>, StepViewBinding> {
     private static final String ARGUMENT_STEP_VIEW = "STEP_VIEW";
 
     public static ShowStepFragment newInstance(@NonNull StepView stepView) {
