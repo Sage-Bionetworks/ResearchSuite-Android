@@ -70,6 +70,8 @@ import dagger.android.support.AndroidSupportInjection;
  *         The type of StepView that this fragment uses.
  * @param <VM>
  *         The type of StepViewModel that this fragment uses.
+ * @param <SB>
+ *         The type of StepViewBinding that this fragment uses.
  */
 public abstract class ShowStepFragmentBase
         <S extends StepView, VM extends ShowStepViewModel<S>, SB extends StepViewBinding<S>>
@@ -86,12 +88,11 @@ public abstract class ShowStepFragmentBase
 
     protected VM showStepViewModel;
 
-    @Inject
-    protected ShowStepViewModelFactory showStepViewModelFactory;
-
     protected S stepView;
 
     protected SB stepViewBinding;
+
+    protected boolean initialized;
 
     private Unbinder stepViewUnbinder;
 
@@ -102,16 +103,42 @@ public abstract class ShowStepFragmentBase
      *         The StepView to put in the bundle.
      * @return a Bundle containing the given StepView.
      */
-    public static Bundle createArguments(@NonNull StepView stepView) {
+    public static Bundle createArguments(@NonNull StepView stepView,
+                                         @NonNull PerformTaskFragment performTaskFragment) {
         checkNotNull(stepView);
+        checkNotNull(performTaskFragment);
 
         Bundle args = new Bundle();
         args.putParcelable(ARGUMENT_STEP_VIEW, stepView);
+        args.putSerializable(ARGUMENT_TASK_FRAGMENT, performTaskFragment);
         return args;
     }
 
-    public ShowStepFragmentBase() {
+    protected void initialize() {
+        if (!this.initialized) {
+            if (getArguments() != null) {
+                this.performTaskFragment = (PerformTaskFragment)
+                        this.getArguments().getSerializable(ARGUMENT_TASK_FRAGMENT);
+                this.stepView = this.getArguments().getParcelable(ARGUMENT_STEP_VIEW);
+            } else {
+                LOGGER.warn("ShowStepFragment created with null arguments: {}", this);
+                return;
+            }
 
+            if (this.performTaskFragment != null) {
+                // gets the PerformTaskViewModel instance of performTaskFragment
+                this.performTaskViewModel = ViewModelProviders.of(this.performTaskFragment)
+                        .get(PerformTaskViewModel.class);
+            } else {
+                LOGGER.warn("ShowStepFragment not passed PerformTaskFragment: {}", this);
+            }
+        }
+
+        this.initialized = true;
+    }
+
+    public ShowStepFragmentBase() {
+        this.initialized = false;
     }
 
     @Override
@@ -119,26 +146,25 @@ public abstract class ShowStepFragmentBase
         AndroidSupportInjection.inject(this);
 
         super.onAttach(context);
-
-        // gets the PerformTaskViewModel instance of performTaskFragment
-        this.performTaskViewModel = ViewModelProviders.of(this.performTaskFragment).get(PerformTaskViewModel.class);
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.initialize();
 
-        S stepViewArg = null;
-        if (getArguments() != null) {
-            stepViewArg = this.getArguments().getParcelable(ARGUMENT_STEP_VIEW);
-            this.stepView = stepViewArg;
+        if (this.stepView != null) {
+            ShowStepViewModelFactory showStepViewModelFactory = this.performTaskViewModel
+                    .getShowStepViewModelFactory();
+            //noinspection unchecked
+            this.showStepViewModel = (VM) ViewModelProviders
+                    .of(this, showStepViewModelFactory.create(this.performTaskViewModel,
+                            this.stepView))
+                    .get(this.stepView.getIdentifier(),
+                            showStepViewModelFactory.getViewModelClass(this.stepView));
+        } else {
+            LOGGER.warn("ShowStepFragment not passed StepView: {}", this);
         }
-
-        //noinspection unchecked
-        this.showStepViewModel = (VM) ViewModelProviders
-                .of(this, this.showStepViewModelFactory.create(this.performTaskViewModel, stepViewArg))
-                .get(stepViewArg.getIdentifier(), this.showStepViewModelFactory.getViewModelClass(stepViewArg));
     }
 
     @Override
@@ -158,10 +184,6 @@ public abstract class ShowStepFragmentBase
     public void onDestroyView() {
         super.onDestroyView();
         this.stepViewBinding.unbind();
-    }
-
-    public void setPerformTaskFragment(PerformTaskFragment performTaskFragment) {
-        this.performTaskFragment = performTaskFragment;
     }
 
     /**
