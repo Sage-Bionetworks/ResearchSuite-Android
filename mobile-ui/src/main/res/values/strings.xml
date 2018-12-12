@@ -50,4 +50,13 @@
     <string name="rs2_are_you_sure_cancel_task">Are you sure that you want to stop?</string>
     <string name="rs2_are_you_sure_cancel_task_discard">"Discard Results"</string>
     <string name="rs2_are_you_sure_cancel_task_keep_going">Keep Going</string>
+
+    <string name="rs2_and">and</string>
+    <string name="rs2_or">or</string>
+    <!-- Joining items -->
+    <string name="rs2_two_item_list_or_format">%1$s or %2$s</string> <!-- Format of a list with two items (For example, 'apples or oranges') -->
+    <string name="rs2_three_item_list_or_format">%1$s, %2$s, or %3$s</string> <!-- Format of a list with three items (For example, 'apples, oranges, or bananas') -->
+    <string name="rs2_two_item_list_and_format">%1$s and %2$s</string> <!-- Format of a list with two items (For example, 'apples and oranges') -->
+    <string name="rs2_three_item_list_and_format">%1$s, %2$s, and %3$s</string> <!-- Format of a list with three items (For example, 'apples, oranges, and bananas') -->
+    <string name="rs2_list_format_delimiter">,\u0020</string> <!-- Delimiter for a list of more than 3 items. Include whitespace as appropriate. (For example, 'foo, bar, goo, or boo') -->
 </resources>
