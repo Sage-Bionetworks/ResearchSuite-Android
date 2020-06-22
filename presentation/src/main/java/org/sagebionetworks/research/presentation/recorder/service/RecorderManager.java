@@ -93,8 +93,12 @@ public class RecorderManager implements ServiceConnection {
     private boolean bound;
     private RecorderService service;
 
-    // TODO: a way to wait until service is bound
-    // TODO: unbind service
+    private RecorderServiceConnectionListener recorderServiceConnectionListener;
+
+    public interface RecorderServiceConnectionListener {
+        void onRecorderServiceConnected(@NonNull final RecorderService recorderService, final boolean bound);
+    }
+
     public RecorderManager(@NonNull Task task, @NonNull String taskIdentifier, @NonNull UUID taskRunUUID,
                            Context context,
                            @NonNull TaskResultManager taskResultManager,
@@ -111,6 +115,15 @@ public class RecorderManager implements ServiceConnection {
         Intent bindIntent = new Intent(context, RecorderService.class);
         this.context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
         this.recorderConfigs = this.getRecorderConfigs();
+    }
+
+    public RecorderManager(@NonNull Task task, @NonNull String taskIdentifier, @NonNull UUID taskRunUUID,
+            Context context,
+            @NonNull TaskResultManager taskResultManager,
+            RecorderConfigPresentationFactory recorderConfigPresentationFactory,
+            RecorderServiceConnectionListener recorderServiceConnectionListener) {
+        this(task, taskIdentifier, taskRunUUID, context, taskResultManager, recorderConfigPresentationFactory);
+        this.recorderServiceConnectionListener = recorderServiceConnectionListener;
     }
 
     /**
@@ -140,6 +153,10 @@ public class RecorderManager implements ServiceConnection {
                 if (!activeRecorders.containsKey(config.getIdentifier())) {
                     this.service.createRecorder(this.taskRunUUID, config);
                 }
+            }
+
+            if (recorderServiceConnectionListener != null) {
+                recorderServiceConnectionListener.onRecorderServiceConnected(this.service, this.bound);
             }
         } catch (IOException e) {
             LOGGER.warn("Encountered IOException while initializing recorders", e);
@@ -252,6 +269,12 @@ public class RecorderManager implements ServiceConnection {
         } else {
             LOGGER.warn("OnStepTransition was called but RecorderService was unbound.");
             // TODO: rkolmos 06/20/2018 handle the service being unbound
+        }
+    }
+
+    public void unbind() {
+        if (this.bound) {
+            this.context.unbindService(this);
         }
     }
 

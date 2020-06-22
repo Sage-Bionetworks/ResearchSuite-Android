@@ -395,7 +395,7 @@ class TextToSpeechService : DaggerService(), OnInitListener {
         for (entry in speechMap.entries) {
             val startOffset: Long? =
                     when {
-                        specialKeyMap.containsKey(entry.key) -> specialKeyMap[entry.key]!!(duration)
+                        specialKeyMap.containsKey(entry.key) -> specialKeyMap[entry.key]?.let { it(duration) }
                         else -> entry.key.toLongOrNull()
                     }
             when {
